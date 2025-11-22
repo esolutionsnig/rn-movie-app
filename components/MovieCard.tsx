@@ -9,7 +9,6 @@ interface MovieCardProps {
 }
 
 const MovieCard = ({ movie }: MovieCardProps) => {
-  console.log(movie.poster_path);
   return (
     <Link href={`/movies/${movie.id}`} asChild>
       <TouchableOpacity className="w-[30%]">
