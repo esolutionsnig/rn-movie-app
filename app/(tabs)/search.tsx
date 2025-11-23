@@ -1,11 +1,14 @@
+// app/(tabs)/search.tsx
 import MovieCard from "@/components/MovieCard";
 import SearchBar from "@/components/SearchBar";
 import { icons } from "@/constants/icons";
 import { images } from "@/constants/images";
 import { fetchMovies } from "@/services/api";
+import { updateSearchCount } from "@/services/appwrite";
 import useFetch from "@/services/useFetch";
 import { useEffect, useState } from "react";
 import { ActivityIndicator, FlatList, Image, Text, View } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 const Search = () => {
   const [searchQuery, setSearchQuery] = useState("");
@@ -30,8 +33,14 @@ const Search = () => {
     return () => clearTimeout(timeoutId);
   }, [searchQuery]);
 
+  useEffect(() => {
+    if (movies?.length > 0 && movies?.[0]) {
+      updateSearchCount(searchQuery, movies[0]);
+    }
+  }, [movies]);
+
   return (
-    <View className="flex-1 bg-primary">
+    <SafeAreaView className="flex-1 bg-primary">
       <Image
         source={images.bg}
         className="flex-1 absolute w-full z-0"
@@ -39,9 +48,9 @@ const Search = () => {
       />
 
       <FlatList
-        data={movies}
+        data={movies || []} // Ensure data is always an array
         renderItem={({ item }) => <MovieCard movie={item} />}
-        keyExtractor={(item) => item.id}
+        keyExtractor={(item) => item.id.toString()} // Convert to string
         className="px-5"
         numColumns={3}
         columnWrapperStyle={{
@@ -52,7 +61,7 @@ const Search = () => {
         contentContainerStyle={{ paddingBottom: 100 }}
         ListHeaderComponent={
           <>
-            <View className="w-full flex-row justify-center mt-20 items-center">
+            <View className="w-full flex-row justify-center mt-10 items-center">
               <Image source={icons.logo} className="w-12 h-10" />
             </View>
 
@@ -99,7 +108,7 @@ const Search = () => {
           ) : null
         }
       />
-    </View>
+    </SafeAreaView>
   );
 };
 
